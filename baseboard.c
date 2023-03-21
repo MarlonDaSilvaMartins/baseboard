@@ -203,6 +203,29 @@ void playerMovement(int key, Character* characterList, Tile Board[N][N]){
 	}
 }
 
+void npcMovement(Character* characterList, Tile Board[N][N]){
+	int npcLine = characterList[0].Line;
+	int npcColumn = characterList[0].Column;
+	int playerLine = characterList[1].Line;
+	int playerColumn = characterList[1].Column;
+	
+	if(characterList[0].Line < characterList[1].Line){
+		if(){
+			
+		}
+		characterList[0].Line++;
+	}
+	if(characterList[0].Line > characterList[1].Line){
+		characterList[0].Line--;
+	}
+	if(characterList[0].Column < characterList[1].Column){
+		characterList[0].Column++;
+	}
+	if(characterList[0].Column > characterList[1].Column){
+		characterList[0].Column--;
+	}
+}
+
 int main()
 {
 	Tile Board[N][N];
@@ -243,6 +266,7 @@ int main()
 		
 		if(_kbhit()){
 			key = _getch();
+			npcMovement(characterList, Board);
 			playerMovement(key, characterList, Board);
 		}
 		
