@@ -203,26 +203,83 @@ void playerMovement(int key, Character* characterList, Tile Board[N][N]){
 	}
 }
 
-void npcMovement(Character* characterList, Tile Board[N][N]){
+void npcMovement(Character* characterList, Tile Board[N][N], int npcLastPlay){
 	int npcLine = characterList[0].Line;
 	int npcColumn = characterList[0].Column;
 	int playerLine = characterList[1].Line;
 	int playerColumn = characterList[1].Column;
 	
-	if(characterList[0].Line < characterList[1].Line){
-		if(){
-			
+	if(npcLine != playerLine && npcColumn != playerColumn){
+		if(npcLastPlay == 1){
+			if(npcColumn < playerColumn && Board[npcLine][npcColumn+1].Blocked == false){
+				if(Board[npcLine][npcColumn+1].Blocked == false){
+					characterList[0].Column++;
+					if((characterList[0].Line == characterList[1].Line) && (characterList[0].Column == characterList[1].Column)){
+						characterList[1].Alive = false;
+					}
+				}
+			}
+			if(npcColumn > playerColumn && Board[npcLine][npcColumn-1].Blocked == false){
+				if(Board[npcLine][npcColumn-1].Blocked == false){
+					characterList[0].Column--;
+					if((characterList[0].Line == characterList[1].Line) && (characterList[0].Column == characterList[1].Column)){
+						characterList[1].Alive = false;
+					}
+				}
+			}
+		}else{
+			if(npcLastPlay == 2){
+				if(npcLine < playerLine && Board[npcLine+1][npcColumn].Blocked == false){
+					if(Board[npcLine+1][npcColumn].Blocked == false){
+						characterList[0].Line++;
+						if((characterList[0].Line == characterList[1].Line) && (characterList[0].Column == characterList[1].Column)){
+							characterList[1].Alive = false;
+						}
+					}
+				}
+				if(npcLine > playerLine && Board[npcLine-1][npcColumn].Blocked == false){
+					if(Board[npcLine-1][npcColumn].Blocked == false){
+						characterList[0].Line--;
+						if((characterList[0].Line == characterList[1].Line) && (characterList[0].Column == characterList[1].Column)){
+							characterList[1].Alive = false;
+						}
+					}
+				}
+			}
 		}
-		characterList[0].Line++;
-	}
-	if(characterList[0].Line > characterList[1].Line){
-		characterList[0].Line--;
-	}
-	if(characterList[0].Column < characterList[1].Column){
-		characterList[0].Column++;
-	}
-	if(characterList[0].Column > characterList[1].Column){
-		characterList[0].Column--;
+	}else{
+		if(npcLine < playerLine){
+			if(Board[npcLine+1][npcColumn].Blocked == false){
+				characterList[0].Line++;
+				if((characterList[0].Line == characterList[1].Line) && (characterList[0].Column == characterList[1].Column)){
+					characterList[1].Alive = false;
+				}
+			}
+		}
+		if(npcLine > playerLine){
+			if(Board[npcLine-1][npcColumn].Blocked == false){
+				characterList[0].Line--;
+				if((characterList[0].Line == characterList[1].Line) && (characterList[0].Column == characterList[1].Column)){
+					characterList[1].Alive = false;
+				}
+			}
+		}
+		if(npcColumn < playerColumn){
+			if(Board[npcLine][npcColumn+1].Blocked == false){
+				characterList[0].Column++;
+				if((characterList[0].Line == characterList[1].Line) && (characterList[0].Column == characterList[1].Column)){
+					characterList[1].Alive = false;
+				}
+			}
+		}
+		if(npcColumn > playerColumn){
+			if(Board[npcLine][npcColumn-1].Blocked == false){
+				characterList[0].Column--;
+				if((characterList[0].Line == characterList[1].Line) && (characterList[0].Column == characterList[1].Column)){
+					characterList[1].Alive = false;
+				}
+			}
+		}
 	}
 }
 
@@ -255,6 +312,7 @@ int main()
 	characterList[1].Type    = Player;
 	characterList[1].Line    = rand() % N;
 	characterList[1].Column  = rand() % N;
+	int npcLastPlay = 1; //1 = horizontal 2 = vertical
 	
 	ResetBoard(Board, 15);
 	
@@ -266,11 +324,20 @@ int main()
 		
 		if(_kbhit()){
 			key = _getch();
-			npcMovement(characterList, Board);
 			playerMovement(key, characterList, Board);
+			npcMovement(characterList, Board, npcLastPlay);
+			if(npcLastPlay == 1){
+				npcLastPlay = 2;
+			}else{
+				npcLastPlay = 1;
+			}
 		}
-		
 	}
+	
+	gotoXY();
+	DisplayBoard(Board, characterList, 2);
+	printf("%d ", (abs(characterList[0].Line - characterList[1].Line) + abs(characterList[0].Column - characterList[1].Column)));
+	printf("\nVoce perdeu");
 
 	return (0);
 }
