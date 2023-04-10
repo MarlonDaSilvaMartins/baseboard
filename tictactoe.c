@@ -113,16 +113,11 @@ void LightBoard()
     Serial.println();
 }
 
-int ButtonRead()
-{
+int ButtonRead(){
     int k=0, buttonState=0, button=-1;
-    for(k=buttonList[0]; k < buttonList[8]; k++)
-    {
+    for(k=buttonList[0]; k < buttonList[8]; k++){
         buttonState = digitalRead(buttonList[k]);
-        if(buttonState == HIGH)
-        {
-
-            LCD.print("kek");
+        if(buttonState == HIGH){
             button = k;
             break;
         }
@@ -215,13 +210,6 @@ void loop(){
     }
 //    IATurn();
 
-//    for(int line=0; line<3; line++){
-//        for(int column=0; column<3; column++){
-//            if(line == column){
-//                Board[line][column].Red=1;
-//                Board[line][column].Blue=1;
-//            }
-//        }
-//    }
+
     LightBoard();
 }
