@@ -115,10 +115,12 @@ void LightBoard()
 
 int ButtonRead(){
     int k=0, buttonState=0, button=-1;
-    for(k=buttonList[0]; k < buttonList[8]; k++){
+    for(k=0; k < 9; k++){
         buttonState = digitalRead(buttonList[k]);
         if(buttonState == HIGH){
-            button = k;
+            LCD.clear();
+            LCD.print(buttonList[k]);
+            button = buttonList[k];
             break;
         }
     }
@@ -143,32 +145,32 @@ void playerMove(int line, int column){
 
 void playerTurn(int keyPressed){
     switch(keyPressed){
-        case 7:
-            playerMove(1, 1);
+        case 07:
+            playerMove(0, 2);
             break;
-        case 6:
-            playerMove(1, 2);
+        case 06:
+            playerMove(0, 1);
             break;
-        case 5:
-            playerMove(1, 3);
+        case 05:
+            playerMove(0, 0);
             break;
         case 10:
-            playerMove(2, 1);
+            playerMove(1, 2);
             break;
         case 9:
-            playerMove(2, 2);
+            playerMove(1, 1);
             break;
         case 8:
-            playerMove(2, 3);
+            playerMove(1, 0);
             break;
         case 13:
-            playerMove(3, 1);
+            playerMove(2, 2);
             break;
         case 12:
-            playerMove(3, 2);
+            playerMove(2, 1);
             break;
         case 11:
-            playerMove(3, 3);
+            playerMove(2, 0);
             break;
     }
 }
@@ -183,7 +185,7 @@ void setup()
     pinMode(latch,OUTPUT);
     pinMode(data,OUTPUT);
 
-    for(int k=buttonList[0]; k <= buttonList[8]; k++)
+    for(int k=0; k < 9; k++)
     {
         pinMode(buttonList[k], INPUT);
     }
