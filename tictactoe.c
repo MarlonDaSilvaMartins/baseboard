@@ -13,15 +13,10 @@ typedef struct _boardCell{
     int Green;
     int Blue;
 
+    int cellValue; // 0 = vazio; 1 = player; 2 = IA
 } BoardCell;
 
-typedef struct _boardGame{
-    int isBlocked;
-    int cellValue; // 0 = vazio; 1 = player; 2 = IA
-} BoardGame;
-
 BoardCell Board[3][3];
-BoardGame boardGame[3][3];
 int playsRemaining;
 
 int buttonList[] = {5, 6, 7, 8, 9, 10, 11, 12, 13};
@@ -49,6 +44,8 @@ void ResetBoard(int Red, int Green, int Blue)
             Board[line][column].Red   = Red;
             Board[line][column].Green = Green;
             Board[line][column].Blue  = Blue;
+
+            Board[line][column].cellValue = 0;
         }
     }
     MasterReset();
@@ -57,12 +54,6 @@ void ResetBoard(int Red, int Green, int Blue)
 void initGameBoard(){
     ResetBoard(0, 0, 0);
     playsRemaining = 9;
-    for(int line=0; line<3; line++){
-        for(int column=0; column<3; column++){
-            boardGame[line][column].isBlocked = 0;
-            boardGame[line][column].cellValue = 0;
-        }
-    }
 
     LCD.clear();
     LCD.print("faca sua jogada");
@@ -136,15 +127,15 @@ int ButtonRead(){
 int checkWin(){
     int winner = 0;
     for(int line = 0; line < 3; line++){
-        if(boardGame[line][0].cellValue == boardGame[line][1].cellValue &&
-           boardGame[line][0].cellValue == boardGame[line][2].cellValue &&
-           boardGame[line][0].cellValue != 0){
-            if((winner = 1) == boardGame[line][0].cellValue){
+        if(Board[line][0].cellValue == Board[line][1].cellValue &&
+           Board[line][0].cellValue == Board[line][2].cellValue &&
+           Board[line][0].cellValue != 0){
+            if((winner = 1) == Board[line][0].cellValue){
                 LCD.clear();
                 LCD.print("Voce venceu");
                 return winner;
             }
-            if((winner = 1) == boardGame[line][0].cellValue){
+            if((winner = 1) == Board[line][0].cellValue){
                 LCD.clear();
                 LCD.print("Voce perdeu");
                 return winner;
@@ -152,44 +143,44 @@ int checkWin(){
         }
     }
     for(int column = 0; column < 3; column++){
-        if(boardGame[0][column].cellValue == boardGame[1][column].cellValue &&
-           boardGame[0][column].cellValue == boardGame[2][column].cellValue &&
-           boardGame[0][column].cellValue != 0){
-            if((winner = 1) == boardGame[0][column].cellValue){
+        if(Board[0][column].cellValue == Board[1][column].cellValue &&
+           Board[0][column].cellValue == Board[2][column].cellValue &&
+           Board[0][column].cellValue != 0){
+            if((winner = 1) == Board[0][column].cellValue){
                 LCD.clear();
                 LCD.print("Voce venceu");
                 return winner;
             }
-            if((winner = 1) == boardGame[0][column].cellValue){
+            if((winner = 1) == Board[0][column].cellValue){
                 LCD.clear();
                 LCD.print("Voce perdeu");
                 return winner;
             }
         }
     }
-    if(boardGame[0][0].cellValue == boardGame[1][1].cellValue &&
-       boardGame[0][0].cellValue == boardGame[2][2].cellValue &&
-       boardGame[0][0].cellValue != 0){
-        if((winner = 1) == boardGame[0][0].cellValue){
+    if(Board[0][0].cellValue == Board[1][1].cellValue &&
+       Board[0][0].cellValue == Board[2][2].cellValue &&
+       Board[0][0].cellValue != 0){
+        if((winner = 1) == Board[0][0].cellValue){
             LCD.clear();
             LCD.print("Voce venceu");
             return winner;
         }
-        if((winner = 2) == boardGame[0][0].cellValue){
+        if((winner = 2) == Board[0][0].cellValue){
             LCD.clear();
             LCD.print("Voce perdeu");
             return winner;
         }
     }
-    if(boardGame[0][2].cellValue == boardGame[1][1].cellValue &&
-       boardGame[0][2].cellValue == boardGame[2][0].cellValue &&
-       boardGame[0][2].cellValue != 0){
-        if((winner = 1) == boardGame[0][2].cellValue){
+    if(Board[0][2].cellValue == Board[1][1].cellValue &&
+       Board[0][2].cellValue == Board[2][0].cellValue &&
+       Board[0][2].cellValue != 0){
+        if((winner = 1) == Board[0][2].cellValue){
             LCD.clear();
             LCD.print("Voce venceu");
             return winner;
         }
-        if((winner = 2) == boardGame[0][2].cellValue){
+        if((winner = 2) == Board[0][2].cellValue){
             LCD.clear();
             LCD.print("Voce perdeu");
             return winner;
@@ -204,58 +195,58 @@ int checkWin(){
     return winner;
 }
 
-int evaluate(BoardGame scoreBoard[3][3], int player) {
+int evaluate(int player) {
     int i, j, score = 0;
 
     for (i = 0; i < 3; i++) {
-        if (scoreBoard[i][0].cellValue == player && scoreBoard[i][1].cellValue == player && scoreBoard[i][2].cellValue == player)
+        if (Board[i][0].cellValue == player && Board[i][1].cellValue == player && Board[i][2].cellValue == player)
             return 100;
-        else if (scoreBoard[i][0].cellValue != 0 && scoreBoard[i][0].cellValue != player && scoreBoard[i][1].cellValue != 0 && scoreBoard[i][1].cellValue != player && scoreBoard[i][2].cellValue != 0 && scoreBoard[i][2].cellValue != player)
+        else if (Board[i][0].cellValue != 0 && Board[i][0].cellValue != player && Board[i][1].cellValue != 0 && Board[i][1].cellValue != player && Board[i][2].cellValue != 0 && Board[i][2].cellValue != player)
             score -= 5;
-        else if (scoreBoard[i][0].cellValue != 0 && scoreBoard[i][0].cellValue != player && scoreBoard[i][1].cellValue != 0 && scoreBoard[i][1].cellValue != player)
+        else if (Board[i][0].cellValue != 0 && Board[i][0].cellValue != player && Board[i][1].cellValue != 0 && Board[i][1].cellValue != player)
             score -= 2;
-        else if (scoreBoard[i][1].cellValue != 0 && scoreBoard[i][1].cellValue != player && scoreBoard[i][2].cellValue != 0 && scoreBoard[i][2].cellValue != player)
+        else if (Board[i][1].cellValue != 0 && Board[i][1].cellValue != player && Board[i][2].cellValue != 0 && Board[i][2].cellValue != player)
             score -= 2;
-        else if (scoreBoard[i][0].cellValue != 0 && scoreBoard[i][0].cellValue != player && scoreBoard[i][2].cellValue != 0 && scoreBoard[i][2].cellValue != player)
+        else if (Board[i][0].cellValue != 0 && Board[i][0].cellValue != player && Board[i][2].cellValue != 0 && Board[i][2].cellValue != player)
             score -= 2;
     }
 
     for (j = 0; j < 3; j++) {
-        if (scoreBoard[0][j].cellValue == player && scoreBoard[1][j].cellValue == player && scoreBoard[2][j].cellValue == player)
+        if (Board[0][j].cellValue == player && Board[1][j].cellValue == player && Board[2][j].cellValue == player)
             return 100;
-        else if (scoreBoard[0][j].cellValue != 0 && scoreBoard[0][j].cellValue != player && scoreBoard[1][j].cellValue != 0 && scoreBoard[1][j].cellValue != player && scoreBoard[2][j].cellValue != 0 && scoreBoard[2][j].cellValue != player)
+        else if (Board[0][j].cellValue != 0 && Board[0][j].cellValue != player && Board[1][j].cellValue != 0 && Board[1][j].cellValue != player && Board[2][j].cellValue != 0 && Board[2][j].cellValue != player)
             score -= 5;
-        else if (scoreBoard[0][j].cellValue != 0 && scoreBoard[0][j].cellValue != player && scoreBoard[1][j].cellValue != 0 && scoreBoard[1][j].cellValue != player)
+        else if (Board[0][j].cellValue != 0 && Board[0][j].cellValue != player && Board[1][j].cellValue != 0 && Board[1][j].cellValue != player)
             score -= 2;
-        else if (scoreBoard[1][j].cellValue != 0 && scoreBoard[1][j].cellValue != player && scoreBoard[2][j].cellValue != 0 && scoreBoard[2][j].cellValue != player)
+        else if (Board[1][j].cellValue != 0 && Board[1][j].cellValue != player && Board[2][j].cellValue != 0 && Board[2][j].cellValue != player)
             score -= 2;
-        else if (scoreBoard[0][j].cellValue != 0 && scoreBoard[0][j].cellValue != player && scoreBoard[2][j].cellValue != 0 && scoreBoard[2][j].cellValue != player)
+        else if (Board[0][j].cellValue != 0 && Board[0][j].cellValue != player && Board[2][j].cellValue != 0 && Board[2][j].cellValue != player)
             score -= 2;
     }
 
-    if (scoreBoard[0][0].cellValue == player && scoreBoard[1][1].cellValue == player && scoreBoard[2][2].cellValue == player)
+    if (Board[0][0].cellValue == player && Board[1][1].cellValue == player && Board[2][2].cellValue == player)
         return 100;
-    else if (scoreBoard[0][0].cellValue != 0 && scoreBoard[0][0].cellValue != player && scoreBoard[1][1].cellValue != 0 && scoreBoard[1][1].cellValue != player && scoreBoard[2][2].cellValue != 0 && scoreBoard[2][2].cellValue != player)
+    else if (Board[0][0].cellValue != 0 && Board[0][0].cellValue != player && Board[1][1].cellValue != 0 && Board[1][1].cellValue != player && Board[2][2].cellValue != 0 && Board[2][2].cellValue != player)
         score -= 5;
-    else if (scoreBoard[0][0].cellValue != 0 && scoreBoard[0][0].cellValue != player && scoreBoard[1][1].cellValue != 0 && scoreBoard[1][1].cellValue != player)
+    else if (Board[0][0].cellValue != 0 && Board[0][0].cellValue != player && Board[1][1].cellValue != 0 && Board[1][1].cellValue != player)
         score -= 2;
-    else if (scoreBoard[1][1].cellValue != 0 && scoreBoard[1][1].cellValue != player && scoreBoard[2][2].cellValue != 0 && scoreBoard[2][2].cellValue != player)
+    else if (Board[1][1].cellValue != 0 && Board[1][1].cellValue != player && Board[2][2].cellValue != 0 && Board[2][2].cellValue != player)
         score -= 2;
 
-    if (scoreBoard[0][2].cellValue == player && scoreBoard[1][1].cellValue == player && scoreBoard[2][0].cellValue == player)
+    if (Board[0][2].cellValue == player && Board[1][1].cellValue == player && Board[2][0].cellValue == player)
         return 100;
-    else if (scoreBoard[0][2].cellValue != 0 && scoreBoard[0][2].cellValue != player && scoreBoard[1][1].cellValue != 0 && scoreBoard[1][1].cellValue != player && scoreBoard[2][0].cellValue != 0 && scoreBoard[2][0].cellValue != player)
+    else if (Board[0][2].cellValue != 0 && Board[0][2].cellValue != player && Board[1][1].cellValue != 0 && Board[1][1].cellValue != player && Board[2][0].cellValue != 0 && Board[2][0].cellValue != player)
         score -= 5;
-    else if (scoreBoard[0][2].cellValue != 0 && scoreBoard[0][2].cellValue != player && scoreBoard[1][1].cellValue != 0 && scoreBoard[1][1].cellValue != player)
+    else if (Board[0][2].cellValue != 0 && Board[0][2].cellValue != player && Board[1][1].cellValue != 0 && Board[1][1].cellValue != player)
         score -= 2;
-    else if (scoreBoard[1][1].cellValue != 0 && scoreBoard[1][1].cellValue != player && scoreBoard[2][0].cellValue != 0 && scoreBoard[2][0].cellValue != player)
+    else if (Board[1][1].cellValue != 0 && Board[1][1].cellValue != player && Board[2][0].cellValue != 0 && Board[2][0].cellValue != player)
         score -= 2;
 
     return score;
 }
 
-int minimax(BoardGame minimaxBoard[3][3], int player) {
-    int score = evaluate(minimaxBoard, player);
+int minimax(int player) {
+    int score = evaluate(player);
     if (score != 0) {
         return score;
     }
@@ -265,10 +256,10 @@ int minimax(BoardGame minimaxBoard[3][3], int player) {
     int bestScore = (player == 2) ? -10 : 10;
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            if (minimaxBoard[i][j].cellValue == 0) {
-                minimaxBoard[i][j].cellValue = player;
-                int score = minimax(minimaxBoard, (player == 2) ? 1 : 2);
-                minimaxBoard[i][j].cellValue = 0;
+            if (Board[i][j].cellValue == 0) {
+                Board[i][j].cellValue = player;
+                int score = minimax((player == 2) ? 1 : 2);
+                Board[i][j].cellValue = 0;
                 if ((player == 2 && score > bestScore) || (player == 1 && score < bestScore)) {
                     bestScore = score;
                 }
@@ -284,10 +275,10 @@ void IATurn(){
     int bestJ = -1;
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            if (boardGame[i][j].cellValue == 0) {
-                boardGame[i][j].cellValue = 2;
-                int score = minimax(boardGame, 1);
-                boardGame[i][j].cellValue = 0;
+            if (Board[i][j].cellValue == 0) {
+                Board[i][j].cellValue = 2;
+                int score = minimax(1);
+                Board[i][j].cellValue = 0;
                 if (score > bestScore) {
                     bestScore = score;
                     bestI = i;
@@ -297,18 +288,20 @@ void IATurn(){
         }
     }
     playsRemaining--;
-    boardGame[bestI][bestJ].cellValue = 2;
+    Board[bestI][bestJ].Red = 1;
+    Board[bestI][bestJ].cellValue = 2;
 }
 
 void playerMove(int line, int column){
-    if(boardGame[line][column].isBlocked == 0){
+    if(Board[line][column].cellValue == 0){
         LCD.clear();
         LCD.print("faca sua jogada");
         playsRemaining--;
-        boardGame[line][column].isBlocked = 1;
-        boardGame[line][column].cellValue = 1;
+        Board[line][column].cellValue = 1;
         Board[line][column].Blue=1;
-        IATurn();
+        if(checkWin() == 0) {
+            IATurn();
+        }
     }else{
         LCD.clear();
         LCD.print("Selecione um campo vazio");
